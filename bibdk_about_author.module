@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * Implements hook_worktabs_items().
+ *
+ * @param $tabs
+ * @param bibdkWork $entity
+ */
+function bibdk_about_author_worktabs_items($tabs, $entity) {
+
+  $about_authors = $entity->getAboutAuthor();
+  foreach ( $about_authors['aboutAuthorElement'] as $about_author )  {
+    $queries[] = urlencode($about_author['searchCode']);
+    dpm($about_author);
+  }
+  $query = implode(';', $queries);
+
+  $tabs['more-about']['about-author'] = array(
+    'title' => t('about_authors', array(), array('context' => 'bibdk_about_author')),
+    'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_about_author')),
+    'rendered' => bibdk_about_author_get_worktab_content($query),
+    'weight' => 5,
+  );
+  return $tabs;
+}
+
+
+/**
+ * @param bibdkWork $entity
+ * @return array $list
+ */
+function bibdk_about_author_get_worktab_content($query){
+
+  $items['about_author'] = array(
+    '#type' => 'fieldset',
+    '#attributes' => array(
+      'class' => array('about-author-load'),
+      'data-query' => $query,
+    ),
+    '#attached' => array(
+      'js' => array(drupal_get_path('module', 'bibdk_about_author') . '/js/bibdk_about_author.js'),
+    ),
+  );
+
+  return drupal_render($items);
+}
+
+
+/**
+ * Implements hook_menu
+ */
+function bibdk_about_author_menu() {
+  $items['about_author/ajax'] = array(
+    'page callback' => 'bibdk_about_author_ajax_get_about_author',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'bibdk_about_author.ajax.inc',
+  );
+  return $items;
+}
+
+/**
+ * Execute about_author request
+ * @param int $numResults
+ * @internal param $pid
+ * @return array
+ */
+function bibdk_about_author_get_about_author($query, $number_of_results = 1) {
+
+  // to do: execute search to see if there's any records
+  return TRUE;
+
+/*
+  //Split pids at delimiter
+  $id = explode(";", $pid);
+
+  //make array off pids
+  $pids = array();
+  foreach ($id as $singlepid)  {
+    $pids[] = $singlepid;
+  }
+
+  //make param used for request with pid-list
+  $param = array(
+    'id' => array( 'pid' => $pids),
+    'numResults' => $numResults,
+  );
+
+  $client = new ting_client_class();
+
+  $reponse = $client->do_request('recommendation', $param);
+
+  return bibdk_about_author_parse_response($reponse);
+*/
+}
+
+/** Parse response from about_author request
+ * @param $response
+ * @return array
+ */
+function bibdk_about_author_parse_response($response){
+/*
+  if(!isset($response->pid) || empty($response->pid))
+    return array();
+
+  $pids = array();
+  foreach($response->pid as $recommendation){
+    $pids[] = $recommendation->{'$'};
+  }
+  return $pids;
+*/
+}
+
+
+function bibdk_about_author_get_link_list_view() {
+
+  return 'foo bar bas';
+
+}
