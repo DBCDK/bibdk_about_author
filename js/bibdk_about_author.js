@@ -3,6 +3,9 @@
     /** Insert about_author results */
     Drupal.addAboutAuthor = function (about_author) {
         if ( about_author.error ) {
+          if ( about_author.error == 'bibdk_about_author_no_records' ) {
+            $('.about-author-load[data-query=' + about_author.query + ']').parent().parent().addClass('visuallyhidden');
+          }
           $('.about-author-load[data-query=' + about_author.query + ']').replaceWith(about_author.error);
         }
         if ( about_author.list ) {
@@ -11,7 +14,7 @@
         }
     },
     Drupal.loadAboutAuthor = function (element) {
-        var query = $(element).attr('data-about-author-query');
+        var query = $(element).attr('data-query');
         /* Add throbber*/
         $(element).addClass('ajax-progress');
         $(element).html('<span class="throbber">&nbsp;</span>');

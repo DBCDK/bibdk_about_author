@@ -4,17 +4,19 @@
  * Return json object from ajax call
  */
 function bibdk_about_author_ajax_get_about_author(){
-  $data['query'] = $_REQUEST['query'];
 
   if ( empty($_REQUEST['query']) ) {
-    $data['error'] = t('bibdk_about_author_empty_query_error');
+    $data['error'] = t('bibdk_about_author_empty_query_error', array(), array('context' => 'bibdk_about_author'));
+    watchdog('bibdk_about_author', t('bibdk_about_author_empty_query_error', array(), array('context' => 'bibdk_about_author')));
   }
   else {
-    $result = bibdk_about_author_get_about_author($data['query']);
+    $result = bibdk_about_author_get_about_author($_REQUEST['query']);
   }
 
-  if ( empty($result) ){
-    $data['error'] = t('bibdk_about_author_no_records');
+  $data['query'] = $_REQUEST['query'];
+
+  if ( !$result ) {
+    $data['error'] = 'bibdk_about_author_no_records'; // nb: don't translate!
   }
   else {
     $data['list'] = bibdk_about_author_get_link_list_view($result);

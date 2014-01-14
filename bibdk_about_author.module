@@ -1,50 +1,6 @@
 <?php
 
-/**
- * Implements hook_worktabs_items().
- *
- * @param $tabs
- * @param bibdkWork $entity
- */
-function bibdk_about_author_worktabs_items($tabs, $entity) {
-
-  $about_authors = $entity->getAboutAuthor();
-  foreach ( $about_authors['aboutAuthorElement'] as $about_author )  {
-    $queries[] = urlencode($about_author['searchCode']);
-    dpm($about_author);
-  }
-  $query = implode(';', $queries);
-
-  $tabs['more-about']['about-author'] = array(
-    'title' => t('about_authors', array(), array('context' => 'bibdk_about_author')),
-    'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_about_author')),
-    'rendered' => bibdk_about_author_get_worktab_content($query),
-    'weight' => 5,
-  );
-  return $tabs;
-}
-
-
-/**
- * @param bibdkWork $entity
- * @return array $list
- */
-function bibdk_about_author_get_worktab_content($query){
-
-  $items['about_author'] = array(
-    '#type' => 'fieldset',
-    '#attributes' => array(
-      'class' => array('about-author-load'),
-      'data-query' => $query,
-    ),
-    '#attached' => array(
-      'js' => array(drupal_get_path('module', 'bibdk_about_author') . '/js/bibdk_about_author.js'),
-    ),
-  );
-
-  return drupal_render($items);
-}
-
+module_load_include('inc', 'bibdk_about_author', 'bibdk_about_author.worktabs');
 
 /**
  * Implements hook_menu
@@ -59,61 +15,85 @@ function bibdk_about_author_menu() {
   return $items;
 }
 
+
+/**
+ * Check if there's at least one a valid query
+ * @param string $queries
+ * @return array
+ */
+function bibdk_about_author_get_about_author($queries) {
+
+  $hits = array();
+
+  $about_authors = unserialize(urldecode($queries));
+
+  foreach ( $about_authors['aboutAuthorElement'] as $about_author )  {
+    if ( bibdk_about_author_do_search($about_author['searchCode']) ) {
+      $hits[] = $about_author;
+    }
+  }
+
+  return $hits;
+
+}
+
+
 /**
  * Execute about_author request
- * @param int $numResults
- * @internal param $pid
- * @return array
+ * @param string $query
+ * @return integer
  */
-function bibdk_about_author_get_about_author($query, $number_of_results = 1) {
+function bibdk_about_author_do_search($query) {
 
-  // to do: execute search to see if there's any records
-  return TRUE;
-
-/*
-  //Split pids at delimiter
-  $id = explode(";", $pid);
-
-  //make array off pids
-  $pids = array();
-  foreach ($id as $singlepid)  {
-    $pids[] = $singlepid;
+  if ( empty($query) ) {
+    return 0;
   }
 
-  //make param used for request with pid-list
-  $param = array(
-    'id' => array( 'pid' => $pids),
-    'numResults' => $numResults,
-  );
+  $params['query'] = urldecode($query);
 
+  // results pr. page (opensearch::stepValue). We just need one to set value = TRUE
+  $params['numResults'] = 1;
+
+  // search profile (opensearch::profile)
+  $params['profile'] = variable_get('ting_search_profile', FALSE);
+  if ( !($params['profile']) ) {
+    watchdog('bibdk_about_author', 'search profile is not set - yields no search results', array(), WATCHDOG_ERROR, url('admin/config/ting/settings'));
+  }
+
+  // agency (opensearch::agency)
+  $params['agency'] = variable_get('ting_agency');
+  if (!($params['agency'])) {
+    watchdog('bibdk_about_author', 'agency is not set - yields no search results', array(), WATCHDOG_ERROR, url('admin/config/ting/settings'));
+  }
+
+  // set Object Format
+  $params['objectFormat'] = variable_get('objectFormat', 'briefDisplay');
+
+  //Set queryLanguage
+  $params['queryLanguage'] = ting_openformat_get_cql_language();
+
+  // do the actual search via ting_client_class
   $client = new ting_client_class();
 
-  $reponse = $client->do_request('recommendation', $param);
+  $result = $client->do_request('search', $params);
 
-  return bibdk_about_author_parse_response($reponse);
-*/
-}
-
-/** Parse response from about_author request
- * @param $response
- * @return array
- */
-function bibdk_about_author_parse_response($response){
-/*
-  if(!isset($response->pid) || empty($response->pid))
-    return array();
-
-  $pids = array();
-  foreach($response->pid as $recommendation){
-    $pids[] = $recommendation->{'$'};
+  if ( !$result ) {
+    return 0;
   }
-  return $pids;
-*/
-}
 
+  // static cache result - used in hook_ding_facetbrowser, ting_search etc.
+  drupal_static('ting_search_results', $result);
 
-function bibdk_about_author_get_link_list_view() {
-
-  return 'foo bar bas';
+  return $result->numTotalCollections;
 
 }
+
+
+
+/**
+ * Translated text constants
+ */
+t('bibdk_about_authors', array(), array('context' => 'bibdk_about_author'));
+t('view_more', array(), array('context' => 'bibdk_about_author'));
+t('bibdk_about_author_empty_query_error', array(), array('context' => 'bibdk_about_author'));
+

@@ -1,0 +1,44 @@
+<?php
+
+class BibdkAboutAuthorUnitTest extends DrupalUnitTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'About Author Unit Test',
+      'description' => t('Test About Author functionality'),
+      'group' => 'Bibliotek.dk  - About Author',
+    );
+  }
+
+  public function setUp() {
+    module_load_include('module', 'bibdk_about_author', 'bibdk_about_author');
+    parent::setUp();
+  }
+
+  public function test_bibdk_about_author() {
+    // Test empty query
+
+    $expected = array();
+
+    $res = bibdk_about_author_get_worktab_content($query);
+
+    $result = _bibdk_custom_search_is_advanced_search_expanded($get);
+    // $this->assertFalse($result, 'Do not expand when on frontpage and default search');
+
+    $this->assertEqual($res, $expected, 'Worktab content parsed correctly.');
+
+
+
+    // Test advanced query
+    $get = array(
+      'qe' => array(
+        'year.op' => array('year_eq'),
+        'work' => 'test',
+      ),
+      'q' => 'bibdk_frontpage',
+    );
+    $result = _bibdk_custom_search_is_advanced_search_expanded($get);
+    $this->assertTrue($result, 'Expand if advanced elements have been set');
+  }
+
+}
