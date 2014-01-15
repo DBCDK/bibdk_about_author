@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * bibdk_about_author.web.test
+ */
 
 class BibdkAboutAuthorTest extends DrupalWebTestCase {
 
@@ -18,7 +22,7 @@ class BibdkAboutAuthorTest extends DrupalWebTestCase {
 
   }
 
-  public function testRunner(){
+  public function testRunner() {
     $this->_testAjaxResponse();
     $this->_testAboutAuthorWorktabs();
     $this->_testGetAboutAuthor();
@@ -30,10 +34,10 @@ class BibdkAboutAuthorTest extends DrupalWebTestCase {
   private function _testAjaxResponse() {
   }
 
-  private function _testAboutAuthorWorktabs(){
+  private function _testAboutAuthorWorktabs() {
   }
 
-  private function _testGetAboutAuthor(){
+  private function _testGetAboutAuthor() {
   }
 
 }

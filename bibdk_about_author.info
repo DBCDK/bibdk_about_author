@@ -6,4 +6,5 @@ package = Bibliotek.dk
 
 files[] = bibdk_about_author.ajax.inc
 files[] = bibdk_about_author.worktabs.inc
-files[] = test/bibdk_about_author.test
+files[] = test/bibdk_about_author.unit.test
+files[] = test/bibdk_about_author.web.test

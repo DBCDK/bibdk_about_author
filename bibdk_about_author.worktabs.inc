@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * bibdk_about_author.worktabs.inc
+ */
 
 /**
  * Implements hook_worktabs_items().
@@ -26,7 +30,7 @@ function bibdk_about_author_worktabs_items($tabs, $entity) {
  * @param string $query
  * @return array $items
  */
-function bibdk_about_author_get_worktab_content($query){
+function bibdk_about_author_get_worktab_content($query) {
 
   $items['about_author'] = array(
     '#type' => 'fieldset',
@@ -52,24 +56,28 @@ function bibdk_about_author_get_worktab_content($query){
  */
 function bibdk_about_author_get_link_list_view($queries, $target = '_self') {
 
-  if ( empty($queries) ) {
-    return null;
-  }
+  $render = array(
+    '#theme' => 'bibdk_about_author_links',
+    '#about_author_links' => array(),
+  );
+
+watchdog('bibdk_about_author', print_r(serialize($queries),1) );
 
   foreach ( $queries as $id => $query ) {
-
-    $links[] = array(
-      'title' => t("bibdk_about_author_read @display", array('@display' => $query['display']), array('context' => 'bibdk_about_author')),
-      'href'  => 'search/work/' . $query['searchCode'],
-      'attributes' => array(
+    $title = t("bibdk_about_author_read @display", array('@display' => $query['display']), array('context' => 'bibdk_about_author'));
+    $render['#about_author_links'][] = array(
+      '#type'  => 'link',
+      '#title' => $title,
+      '#href'  => 'search/work/' . $query['searchCode'],
+      '#options' => array(
         'target' => $target,
-        'title' => $query['display'],
-      )
+        'title'  => $title,
+      ),
     );
   }
 
-  return theme('links', array(
-    'links' => $links,
-  ));
+watchdog('bibdk_about_author', print_r(serialize($render),1) );
+
+  return $render;
 
 }

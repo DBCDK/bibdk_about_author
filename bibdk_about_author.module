@@ -90,6 +90,22 @@ function bibdk_about_author_do_search($query) {
 
 
 
+/*
+ * Implements hook_theme
+ */
+function bibdk_about_author_theme() {
+  $themes = array(
+    'bibdk_about_author_links' => array(
+      'variables' => array('about_author_links' => NULL),
+      'template' => 'theme/bibdk-about-author-links'
+    ),
+  );
+  return $themes;
+}
+
+
+
+
 /**
  * Translated text constants
  */
