@@ -14,27 +14,96 @@ class BibdkAboutAuthorTest extends DrupalWebTestCase {
     );
   }
 
+
   public function setUp() {
     parent::setUp('bibdk_about_author', 'ting_openformat', 'worktabs');
 
     //search service
-    variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.5/');
+    variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.8/');
 
   }
+
 
   public function testRunner() {
-    $this->_testAjaxResponse();
+    $this->_testAjaxResponseEmpty();
+    $this->_testAjaxResponseNoRecords();
+    $this->_testAjaxResponseHasRecords();
     $this->_testAboutAuthorWorktabs();
-    $this->_testGetAboutAuthor();
   }
+
 
   /**
    * Tests the output data of bibdk_about_author.ajax.inc
-  */
-  private function _testAjaxResponse() {
+   */
+  private function _testAjaxResponseEmpty() {
+    $url = $this->getAbsoluteUrl('about_author/ajax');
+    $options = array(
+      'query' => array(
+        'query' => '',
+      ),
+    );
+    $result = $this->drupalGetAJAX($url, $options);
+    $error_msg = 'bibdk_about_author_empty_query_error';
+    $this->assertRaw($error_msg, 'Empty query return an error.');
+  }
+
+
+  /**
+   * Tests the output data of bibdk_about_author.ajax.inc
+   */
+  private function _testAjaxResponseNoRecords() {
+    $url = $this->getAbsoluteUrl('about_author/ajax');
+
+    $query = array(
+      'aboutAuthorElement' => array(
+        'foo' => array(
+          'searchCode' => 'dkcclphrase.lem="xsw2cde3vfr4"',
+          'display' => 'foo',
+        ),
+      ),
+    );
+
+    $options = array(
+      'query' => array(
+        'query' => urlencode(serialize($query)),
+      ),
+    );
+
+    $result = $this->drupalGetAJAX($url, $options);
+    $error_msg = 'bibdk_about_author_no_records';
+    $this->assertRaw($error_msg, 'Gibberish query return no records.');
+  }
+
+
+  /**
+   * Tests the output data of bibdk_about_author.ajax.inc
+   */
+  private function _testAjaxResponseHasRecords() {
+    $url = $this->getAbsoluteUrl('about_author/ajax');
+
+    $query = array(
+      'aboutAuthorElement' => array(
+        'Murakami, Haruki' => array(
+          'searchCode' => 'dkcclphrase.lem="Murakami Haruki"',
+          'display' => 'Murakami, Haruki',
+        ),
+      ),
+    );
+
+    $options = array(
+      'query' => array(
+        'query' => urlencode(serialize($query)),
+      ),
+    );
+
+    $result = $this->drupalGetAJAX($url, $options);
+    $this->assertRaw('list', 'AJAX contain a list of links');
   }
 
   private function _testAboutAuthorWorktabs() {
+    $this->drupalGet('work/870970-basis:28934297');
+    $this->assertText(' bibdk_about_authors ', 'About authors title is present.');
+    $this->assertRaw('about-author-load', 'About authors loader is present');
   }
 
   private function _testGetAboutAuthor() {

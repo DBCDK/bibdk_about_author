@@ -16,16 +16,22 @@ function bibdk_about_author_menu() {
 }
 
 
+
 /**
  * Check if there's at least one a valid query
  * @param string $queries
  * @return array
  */
-function bibdk_about_author_get_about_author($queries) {
+function bibdk_about_author_get_about_author($queries = '') {
+
+  if ( empty($queries) ) {
+    return array();
+  }
 
   $hits = array();
-
   $about_authors = unserialize(urldecode($queries));
+
+  watchdog('bibdk_about_author', print_r($about_authors,1));
 
   foreach ( $about_authors['aboutAuthorElement'] as $about_author )  {
     if ( bibdk_about_author_do_search($about_author['searchCode']) ) {
@@ -36,6 +42,7 @@ function bibdk_about_author_get_about_author($queries) {
   return $hits;
 
 }
+
 
 
 /**
@@ -102,7 +109,6 @@ function bibdk_about_author_theme() {
   );
   return $themes;
 }
-
 
 
 

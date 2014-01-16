@@ -14,16 +14,17 @@ function bibdk_about_author_ajax_get_about_author() {
     watchdog('bibdk_about_author', 'bibdk_about_author: empty query error');
   }
   else {
-    $result = bibdk_about_author_get_about_author($_REQUEST['query']);
+
+    $data['query'] = $_REQUEST['query'];
+
+    if ( $result = bibdk_about_author_get_about_author($_REQUEST['query']) ) {
+      $data['list'] = drupal_render(bibdk_about_author_get_link_list_view($result));
+    }
+    else {
+      $data['error'] = 'bibdk_about_author_no_records'; // nb: don't translate!
+    }
+
   }
 
-  $data['query'] = $_REQUEST['query'];
-
-  if ( !$result ) {
-    $data['error'] = 'bibdk_about_author_no_records'; // nb: don't translate!
-  }
-  else {
-    $data['list'] = drupal_render(bibdk_about_author_get_link_list_view($result));
-  }
   drupal_json_output($data);
 }
