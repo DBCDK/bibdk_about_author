@@ -31,8 +31,6 @@ function bibdk_about_author_get_about_author($queries = '') {
   $hits = array();
   $about_authors = unserialize(urldecode($queries));
 
-  watchdog('bibdk_about_author', print_r($about_authors,1));
-
   foreach ( $about_authors['aboutAuthorElement'] as $about_author )  {
     if ( bibdk_about_author_do_search($about_author['searchCode']) ) {
       $hits[] = $about_author;
