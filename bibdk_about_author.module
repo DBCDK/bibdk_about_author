@@ -117,5 +117,9 @@ function bibdk_about_author_theme() {
  */
 t('bibdk_about_authors', array(), array('context' => 'bibdk_about_author'));
 t('view_more', array(), array('context' => 'bibdk_about_author'));
-t('bibdk_about_author_empty_query_error', array(), array('context' => 'bibdk_about_author'));
 
+t('bibdk_about_author_empty_query', array(), array('context' => 'bibdk_about_author'));
+t('bibdk_about_author_toggle_text_error', array(), array('context' => 'bibdk_about_author'));
+
+t('bibdk_about_author_no_records', array(), array('context' => 'bibdk_about_author'));
+t('bibdk_about_author_toggle_text_empty', array(), array('context' => 'bibdk_about_author'));
