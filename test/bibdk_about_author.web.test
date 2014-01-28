@@ -106,7 +106,4 @@ class BibdkAboutAuthorTest extends DrupalWebTestCase {
     $this->assertRaw('about-author-load', 'About authors loader is present');
   }
 
-  private function _testGetAboutAuthor() {
-  }
-
 }

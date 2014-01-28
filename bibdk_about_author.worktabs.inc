@@ -68,10 +68,12 @@ function bibdk_about_author_get_link_list_view($queries, $target = '_self') {
       '#type'  => 'link',
       '#title' => $query['display'],
       '#href'  => 'search/work/' . $query['searchCode'],
-      '#options' => array(
+      '#attributes' => array(
+        'class' => array('about-author-links'),
         'target' => $target,
         'title'  => $query['display'],
       ),
+
     );
   }
 
