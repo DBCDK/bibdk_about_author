@@ -1,0 +1,44 @@
+<?php
+/**
+ * @file
+ * bibdk_about_author.unit.test
+ */
+
+class BibdkAboutAuthorUnitTestCase extends DrupalUnitTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'About Author Unit Test',
+      'description' => 'Test About Author functionality',
+      'group' => 'Bibliotek.dk - About Author',
+    );
+  }
+
+  public function setUp() {
+    module_load_include('module', 'bibdk_about_author', 'bibdk_about_author');
+    parent::setUp();
+  }
+
+  public function testGetLinkListViewEmpty() {
+
+    // Test empty bibdk_about_author_get_link_list_view()
+    $query = array();
+    $expected = unserialize('a:2:{s:6:"#theme";s:24:"bibdk_about_author_links";s:19:"#about_author_links";a:0:{}}');
+    $res = bibdk_about_author_get_link_list_view($query);
+    $this->assertEqual($res, $expected, 'About author render array parsed correctly with an empty query.');
+
+  }
+
+  public function testGetLinkListViewValid() {
+
+    // Test bibdk_about_author_get_link_list_view()
+    $ser_in  = 'a:1:{i:0;a:2:{s:10:"searchCode";s:33:"dkcclphrase.lem="Murakami Haruki"";s:7:"display";s:16:"Murakami, Haruki";}}';
+    $ser_out = 'a:2:{s:6:"#theme";s:24:"bibdk_about_author_links";s:19:"#about_author_links";a:1:{i:0;a:4:{s:5:"#type";s:4:"link";s:6:"#title";s:16:"Murakami, Haruki";s:5:"#href";s:45:"search/work/dkcclphrase.lem="Murakami Haruki"";s:11:"#attributes";a:3:{s:5:"class";a:1:{i:0;s:18:"about-author-links";}s:6:"target";s:5:"_self";s:5:"title";s:16:"Murakami, Haruki";}}}}';
+    $query    = unserialize($ser_in);
+    $expected = unserialize($ser_out);
+    $res = bibdk_about_author_get_link_list_view($query);
+    $this->assertEqual($res, $expected, 'About author render array parsed correctly with a valid query.');
+
+  }
+
+}
