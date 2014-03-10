@@ -58,25 +58,29 @@ function bibdk_about_author_get_worktab_content($query = '') {
  */
 function bibdk_about_author_get_link_list_view($queries, $target = '_self') {
 
-  $render = array(
-    '#theme' => 'bibdk_about_author_links',
-    '#about_author_links' => array(),
-  );
-
+  $items = array();
   foreach ( $queries as $id => $query ) {
-    $render['#about_author_links'][] = array(
+    $title = t("bibdk_about_author_read @display", array('@display' =>   $query['display']), array('context' => 'bibdk_about_author'));
+    $link = array(
       '#type'  => 'link',
-      '#title' => $query['display'],
+      '#title' => $title,
       '#href'  => 'search/work/' . $query['searchCode'],
       '#attributes' => array(
         'class' => array('about-author-links'),
         'target' => $target,
-        'title'  => $query['display'],
+        'title'  =>  $title,
       ),
 
     );
+    $items[]= render($link);
   }
-
-  return $render;
+  
+  // make itemlist for display in single items
+  $itemlist = array(
+   '#theme'  => 'item_list',   
+   '#items'  => $items,   
+  ); 
+  
+  return $itemlist;
 
 }
