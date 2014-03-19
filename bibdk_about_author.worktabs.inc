@@ -7,10 +7,10 @@
 /**
  * Implements hook_worktabs_items().
  *
- * @param $tabs
  * @param bibdkWork $entity
  */
-function bibdk_about_author_worktabs_items($tabs, $entity) {
+function bibdk_about_author_worktabs_items($entity) {
+  $tabs = array();
   $about_author = urlencode(serialize($entity->getAboutAuthor()));
 
   $tabs['more-about']['about-author'] = array(
