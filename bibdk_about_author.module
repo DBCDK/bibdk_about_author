@@ -74,9 +74,6 @@ function bibdk_about_author_do_search($query) {
   // set Object Format
   $params['objectFormat'] = variable_get('objectFormat', 'briefDisplay');
 
-  //Set queryLanguage
-  $params['queryLanguage'] = ting_openformat_get_cql_language();
-
   // do the actual search via ting_client_class
   $client = new ting_client_class();
 
